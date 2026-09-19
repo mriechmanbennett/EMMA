@@ -1,0 +1,10 @@
+# Used in scripts-meta\Set-EMVars.ps1 to add to profile.ps1
+# Copy in this directory without the example suffix to use
+$EM_Var = @{
+    EMVarsSet = $true
+    #AuthorName = 'Bob Page'
+    #CompanyName = 'VersaLife'
+    #NewScriptLink = 'https://github.com/mriechmanbennett/EMMA/'
+}
+
+return $EM_Var
