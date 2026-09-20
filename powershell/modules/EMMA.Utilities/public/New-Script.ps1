@@ -148,10 +148,13 @@ function $ScriptName {
     #------------ Script start ------------#
     BEGIN {
         `$FunctionName = `"$ScriptName`"
-		`$StartTime = Get-Date
-        `$CurrentID = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-        `$IsAdmin = [System.Security.Principal.WindowsPrincipal]::new(`$CurrentID).IsInRole(`'administrators`')
-		Write-Verbose `"[BEGIN  ] Starting:   `$FunctionName`"
+        `$IsVerbose = `$PSCmdlet.MyInvocation.BoundParameters['Verbose'].IsPresent
+		if (`$IsVerbose) {
+			`$StartTime = Get-Date
+			`$CurrentID = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+			`$IsAdmin = [System.Security.Principal.WindowsPrincipal]::new(`$CurrentID).IsInRole('administrators')
+		}
+        Write-Verbose `"[BEGIN  ] Starting:   `$FunctionName`"
         Write-Verbose `"[BEGIN  ] User:       `$CurrentID.Name`"
         Write-Verbose `"[BEGIN  ] Computer    `$env:COMPUTERNAME`"
         Write-Verbose `"[BEGIN  ] Is Admin:   `$IsAdmin`"
@@ -167,8 +170,10 @@ function $ScriptName {
     }
 
     END {
-        `$EndTime = Get-Date
-		`$TimeSpan = New-TimeSpan -Start `$StartTime -End `$EndTime
+        if (`$IsVerbose) {
+			`$EndTime = Get-Date
+			`$TimeSpan = New-TimeSpan -Start `$StartTime -End `$EndTime
+		}
 		Write-Verbose `"[END    ] EndTime = `$EndTime`"
 		Write-Verbose `"[END    ] RunTime = `$TimeSpan`"
 		Write-Verbose `"[END    ] `$FunctionName`"
