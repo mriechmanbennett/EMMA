@@ -55,16 +55,17 @@ function Get-RDPLog {
 	}
 
 	PROCESS {
-		foreach ( $Computer in $ComputerName ) {
-			Write-Verbose "[PROCESS] Process $Item at $(Get-Date)"
-			Invoke-Command  {
-				Get-WinEvent -FilterHashtable (
-					@{
-						Logname = 'Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational';
-						ID      = 1149;
-					}
-				) 
+		$ComputerLogs = Invoke-Command -ComputerName $ComputerName {
+			$EventData = Get-WinEvent -FilterHashtable (
+				@{
+					Logname = 'Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational';
+					ID      = 1149;
+				}
+			)
+			[xml[]]$xml = foreach ($Datum in $EventData) {
+				$Datum.ToXml()
 			}
+			$xml # doesn't work, will deserialize
 		}
 	}
 
