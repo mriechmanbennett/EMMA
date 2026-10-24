@@ -78,14 +78,14 @@ function Get-RDPLog {
 		[xml[]]$xml = foreach ($Record in $EventLogRecords) { $Record.ToXml() }
 		$EventData = Foreach ($LogEvent in $xml.Event) {
 			$Properties = @{
-				PSTypeName = 'EMMA.Log.RDP'
-				TimeCreated = (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss')
+				PSTypeName 		= 'EMMA.Log.RDP'
+				TimeCreated 	= (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss')
 				TimeCreatedFull = (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss K')
 				TimeCreatedRawTimestamp = Get-Date ($LogEvent.System.TimeCreated.SystemTime)
-				User        = $LogEvent.UserData.EventXML.Param1
-				Domain      = $LogEvent.UserData.EventXML.Param2
-				Computer	= $Computer
-				Client      = $LogEvent.UserData.EventXML.Param3
+				User        	= $LogEvent.UserData.EventXML.Param1
+				Domain      	= $LogEvent.UserData.EventXML.Param2
+				ComputerName	= $Computer
+				Client      	= $LogEvent.UserData.EventXML.Param3
 			}
 			$ThisObject = New-Object -Type PSObject -Property $Properties
 			Write-Output $ThisObject

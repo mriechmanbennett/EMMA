@@ -2,7 +2,7 @@
 <Configuration>
   <ViewDefinitions>
     <View>
-      <Name>EMMA-Log-RDP</Name>
+      <Name>EMMA.Log.RDP</Name>
       <ViewSelectedBy>
         <TypeName>EMMA.Log.RDP</TypeName>
       </ViewSelectedBy>
@@ -20,6 +20,10 @@
             <Label>Source Host</Label>
             <Width>10</Width>
           </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Computer Name</Label>
+            <Width>14</Width>
+          </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
           <TableRowEntry>
@@ -33,10 +37,47 @@
               <TableColumnItem>
                 <PropertyName>Client</PropertyName>
               </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>ComputerName</PropertyName>
+              </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>
         </TableRowEntries>
       </TableControl>
+    </View>
+    <View>
+      <Name>EMMA.Log.RDP</Name>
+      <ViewSelectedBy>
+        <TypeName>EMMA.Log.RDP</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem>
+                <Label>TimeCreated: </Label>
+                <PropertyName>TimeCreatedFull</PropertyName>
+              </ListItem>
+              <ListItem>
+                <Label>Domain: </Label>
+                <PropertyName>Domain</PropertyName>
+              </ListItem>
+              <ListItem>
+                <Label>Username: </Label>
+                <PropertyName>User</PropertyName>
+              </ListItem>
+              <ListItem>
+                <Label>ComputerName: </Label>
+                <PropertyName>ComputerName</PropertyName>
+              </ListItem>
+              <ListItem>
+                <Label>Source Host: </Label>
+                <PropertyName>Client</PropertyName>
+              </ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
     </View>
   </ViewDefinitions>
 </Configuration>
