@@ -46,6 +46,7 @@ function Get-RDPLog {
 			$StartTime = Get-Date
 			$CurrentID = [System.Security.Principal.WindowsIdentity]::GetCurrent()
 			$IsAdmin = [System.Security.Principal.WindowsPrincipal]::new($CurrentID).IsInRole('administrators')
+			$Stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 		}
 
 		Write-Verbose "[BEGIN  ] Starting:   $FunctionName"
@@ -98,8 +99,9 @@ function Get-RDPLog {
 
 	END {
 		if ($IsVerbose) {
+			$Stopwatch.Stop()
 			$EndTime = Get-Date
-			$TimeSpan = New-TimeSpan -Start $StartTime -End $EndTime
+			$TimeSpan = $Stopwatch.Elapsed
 		}
 		Write-Verbose "[END    ] EndTime = $EndTime"
 		Write-Verbose "[END    ] RunTime = $TimeSpan"
