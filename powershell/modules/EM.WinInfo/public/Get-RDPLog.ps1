@@ -73,7 +73,6 @@ function Get-RDPLog {
 			$EventLogRecords = Get-WinEvent @GetWinEventParams
 		}
 
-		#[xml[]]$xml = $EventLogRecords | Foreach-Object { $_.ToXml() }
 		# Turn the records into XML objects to parse
 		[xml[]]$xml = foreach ($Record in $EventLogRecords) { $Record.ToXml() }
 		$EventData = Foreach ($LogEvent in $xml.Event) {
