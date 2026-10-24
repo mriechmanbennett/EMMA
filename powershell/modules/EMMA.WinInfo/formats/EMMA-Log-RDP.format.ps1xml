@@ -10,14 +10,14 @@
         <TableHeaders>
           <TableColumnHeader>
             <Label>TimeCreated</Label>
-            <Width>26</Width>
+            <Width>20</Width>
           </TableColumnHeader>
           <TableColumnHeader>
             <Label>User</Label>
             <Width>20</Width>
           </TableColumnHeader>
           <TableColumnHeader>
-            <Label>SourceHost</Label>
+            <Label>Source Host</Label>
             <Width>10</Width>
           </TableColumnHeader>
         </TableHeaders>
