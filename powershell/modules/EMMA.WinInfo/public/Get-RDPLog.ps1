@@ -31,6 +31,7 @@ function Get-RDPLog {
 		[String[]]$ComputerName = $env:COMPUTERNAME,
 
 		[Parameter(Mandatory = $false)]
+		[Alias('MaxEvents')]
 		[Int32]$Limit,
 
 		[Parameter(Mandatory = $false)]

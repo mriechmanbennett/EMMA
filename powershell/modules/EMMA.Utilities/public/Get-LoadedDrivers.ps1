@@ -1,7 +1,7 @@
 function Get-LoadedDrivers {
     <#
     .SYNOPSIS
-        Synopsis for new script
+        Get drivers currently loaded on a system
 
     .DESCRIPTION
         Description for new script
