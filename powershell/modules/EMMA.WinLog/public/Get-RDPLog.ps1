@@ -26,33 +26,55 @@ function Get-RDPLog() {
     #>
 	[CmdletBinding()]
 	param(
-		[Parameter(Mandatory=$false)]
+		[Parameter(Mandatory = $false, ValueFromPipeline = $true)]
+		[String[]]$ComputerName = $env:COMPUTERNAME,
+
+		[Parameter(Mandatory = $false)]
 		[Int32]$Limit,
 
-		[Parameter(Mandatory=$false)]
-		[String]$Computer = $env:COMPUTERNAME
+		[Parameter(Mandatory = $false)]
+		[PSCredential]$Credential
 	)
 
-	$LogName = 'Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational' 
-    $LogFilter = '<QueryList><Query Id="0"><Select>*[System[EventID=1149]]</Select></Query></QueryList>'
+	BEGIN {
+		Write-Verbose "[BEGIN]"
+	}
 
-    $RDPAuths = Get-WinEvent -LogName $LogName -FilterXPath $LogFilter -ComputerName $Computer
-	
-	$Count = 0
+	PROCESS {
+		Foreach ( $Computer in $ComputerName ) {
+			$GetWinEventParams = @{
+				LogName      = 'Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'
+				FilterXPath  = '<QueryList><Query Id="0"><Select>*[System[EventID=1149]]</Select></Query></QueryList>'
+				ComputerName = $Computer
+			}
+			if ($Limit) {
+				$GetWinEventParams.Add("MaxEvents", $Limit)
+			}
+			if ($Credential) {
+				$GetWinEventParams.Add("Credential", $Credential)
+			}
+			$EventLogRecords = Get-WinEvent @GetWinEventParams
+		}
 
-    [xml[]]$xml = $RDPAuths | Foreach-Object {$_.ToXml()}
-	$EventData = Foreach ($LogEvent in $xml.Event) {
-		New-Object PSObject -Property @{
-			TimeCreated = (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd hh:mm:ss K')
-			User = $LogEvent.UserData.EventXML.Param1
-			Domain = $LogEvent.UserData.EventXML.Param2
-			Client = $LogEvent.UserData.EventXML.Param3
-		}
-		# If Limit is set, break when we reach it
-		if ($Limit) {
-			$Count++
-			if ($Count -ge $Limit) { break }
-		}
-	} 
-	$EventData | Format-Table
+		#[xml[]]$xml = $EventLogRecords | Foreach-Object { $_.ToXml() }
+		# Turn the records into XML objects to parse
+		[xml[]]$xml = foreach ($Record in $EventLogRecords) { $Record.ToXml() }
+		$EventData = Foreach ($LogEvent in $xml.Event) {
+			$Properties = @{
+				PSTypeName = 'EMMA.Log.RDP'
+				TimeCreated = (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd hh:mm:ss K')
+				User        = $LogEvent.UserData.EventXML.Param1
+				Domain      = $LogEvent.UserData.EventXML.Param2
+				Computer	= $Computer
+				Client      = $LogEvent.UserData.EventXML.Param3
+			}
+			$ThisObject = New-Object -Type PSObject -Property $Properties
+			Write-Output $ThisObject
+		} 
+		Write-Output $EventData
+	}
+
+	END {
+		Write-Verbose "[END]"
+	}
 }
