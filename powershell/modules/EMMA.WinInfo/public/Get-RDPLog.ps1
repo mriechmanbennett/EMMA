@@ -85,7 +85,6 @@ function Get-RDPLog {
 				PSTypeName 		= 'EMMA.Log.RDP'
 				TimeCreated 	= (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss')
 				TimeCreatedFull = (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss K')
-				TimeCreatedRawTimestamp = Get-Date ($LogEvent.System.TimeCreated.SystemTime)
 				User        	= $LogEvent.UserData.EventXML.Param1
 				Domain      	= $LogEvent.UserData.EventXML.Param2
 				ComputerName	= $Computer
