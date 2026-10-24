@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Collected via:
+  Get-FormatData -TypeName System.Reflection.Assembly | Export-FormatData -Path ./EXAMPLE.format.ps1xml
+-->
+<Configuration>
+  <ViewDefinitions>
+    <View>
+      <Name>System.Reflection.Assembly</Name>
+      <ViewSelectedBy>
+        <TypeName>System.Reflection.Assembly</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>GAC</Label>
+            <Width>6</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Version</Label>
+            <Width>14</Width>
+          </TableColumnHeader>
+          <TableColumnHeader />
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>GlobalAssemblyCache</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>ImageRuntimeVersion</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Location</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>System.Reflection.Assembly</Name>
+      <ViewSelectedBy>
+        <TypeName>System.Reflection.Assembly</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem>
+                <PropertyName>CodeBase</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>EntryPoint</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>EscapedCodeBase</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>FullName</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>GlobalAssemblyCache</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>HostContext</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>ImageFileMachine</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>ImageRuntimeVersion</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>Location</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>ManifestModule</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>MetadataToken</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>PortableExecutableKind</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>ReflectionOnly</PropertyName>
+              </ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+  </ViewDefinitions>
+</Configuration>
