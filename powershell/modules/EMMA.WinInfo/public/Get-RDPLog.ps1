@@ -56,13 +56,17 @@ function Get-RDPLog {
 		Write-Verbose "[BEGIN  ] OS Version: $((Get-CimInstance Win32_Operatingsystem).Version)"
 		Write-Verbose "[BEGIN  ] StartTime = $StartTime"
 		
+		# Create filter hashtable for log collection
+		$FilterHashtable = @{
+			LogName      = 'Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'
+			Id			 = 1149
+		}
 	}
 
 	PROCESS {
 		Foreach ( $Computer in $ComputerName ) {
 			$GetWinEventParams = @{
-				LogName      = 'Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'
-				FilterXPath  = '<QueryList><Query Id="0"><Select>*[System[EventID=1149]]</Select></Query></QueryList>'
+				FilterHashtable  = $FilterHashtable
 				ComputerName = $Computer
 			}
 			if ($Limit) {
