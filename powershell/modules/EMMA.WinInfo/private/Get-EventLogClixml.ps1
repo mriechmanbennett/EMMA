@@ -1,10 +1,11 @@
 function Get-EventLogClixml {
     <#
     .SYNOPSIS
-        Synopsis for new script
+        Get Windows event log data from a computer and return as a clixml string
 
     .DESCRIPTION
-        Description for new script
+        Get Windows event log data from a computer and return as a clixml string.
+        This is needed only to abstract away the actual PSRemoting/RPC stuff.
 
     .PARAMETER Example
         Example parameter
@@ -57,6 +58,9 @@ function Get-EventLogClixml {
         Write-Verbose "[BEGIN  ] OS:         $((Get-CimInstance Win32_Operatingsystem).Caption)"
         Write-Verbose "[BEGIN  ] OS Version: $((Get-CimInstance Win32_Operatingsystem).Version)"
 		Write-Verbose "[BEGIN  ] StartTime = $StartTime"
+
+        # Strongly type the output object to make my monkey brain happy
+        [string]$OutputXml = ''
     }
 
     PROCESS {
@@ -66,6 +70,19 @@ function Get-EventLogClixml {
     }
 
     END {
+
+        # The .Net object works in Core as well, but avoiding it lets the
+        # non-verbose script work in constrained language mode (i think)
+        if ('Desktop' -eq $PSEdition) {
+            $OutputXml = [System.Management.Automation.PSSerializer]::Serialize($myObject, 10)
+        }
+        else {
+            $OutputXml = ConvertTo-CliXml $OutputObject
+        }
+
+        Write-Output $OutputXml
+
+        # Verbose stuff
         if ($IsVerbose) {
             $Stopwatch.Stop()
 			$EndTime = Get-Date
