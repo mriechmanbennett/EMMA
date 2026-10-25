@@ -64,7 +64,7 @@ function Get-EventLogClixml {
     }
 
     PROCESS {
-        foreach ( $Item in $InputObject ) {
+        foreach ( $Computer in $ComputerName ) {
 			Write-Verbose "[PROCESS] Process $Item at $(Get-Date)"
 		}
     }

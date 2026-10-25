@@ -59,42 +59,44 @@ function Get-RDPLog {
 		
 		# Create filter hashtable for log collection
 		$FilterHashtable = @{
-			LogName      = 'Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'
-			Id			 = 1149
+			LogName = 'Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'
+			Id      = 1149
+		}
+		# Set the rest of the Get-WinEvent parameters
+		$GetWinEventParams = @{
+			FilterHashtable = $FilterHashtable
+		}
+		if ($Limit) {
+			$GetWinEventParams.Add("MaxEvents", $Limit)
+		}
+		if ($Credential) {
+			$GetWinEventParams.Add("Credential", $Credential)
 		}
 	}
 
 	PROCESS {
 		Foreach ( $Computer in $ComputerName ) {
-			$GetWinEventParams = @{
-				FilterHashtable  = $FilterHashtable
-				ComputerName = $Computer
-			}
-			if ($Limit) {
-				$GetWinEventParams.Add("MaxEvents", $Limit)
-			}
-			if ($Credential) {
-				$GetWinEventParams.Add("Credential", $Credential)
-			}
+			$GetWinEventParams.Add("ComputerName", $Computer)
 			$EventLogRecords = Get-WinEvent @GetWinEventParams
-		}
-
-		# Turn the records into XML objects to parse
-		[xml[]]$xml = foreach ($Record in $EventLogRecords) { $Record.ToXml() }
-		$EventData = Foreach ($LogEvent in $xml.Event) {
-			$Properties = @{
-				PSTypeName 		= 'EMMA.Log.RDP'
-				TimeCreated 	= (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss')
-				TimeCreatedFull = (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss K')
-				User        	= $LogEvent.UserData.EventXML.Param1
-				Domain      	= $LogEvent.UserData.EventXML.Param2
-				ComputerName	= $Computer
-				Client      	= $LogEvent.UserData.EventXML.Param3
+			Write-Verbose $EventLogRecords[0].GetType()
+		
+			# Turn the records into XML objects to parse
+			[xml[]]$xml = foreach ($Record in $EventLogRecords) { $Record.ToXml() }
+			$EventData = Foreach ($LogEvent in $xml.Event) {
+				$Properties = @{
+					PSTypeName      = 'EMMA.Log.RDP'
+					TimeCreated     = (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss')
+					TimeCreatedFull = (Get-Date ($LogEvent.System.TimeCreated.SystemTime) -Format 'yyyy-MM-dd HH:mm:ss K')
+					User            = $LogEvent.UserData.EventXML.Param1
+					Domain          = $LogEvent.UserData.EventXML.Param2
+					ComputerName    = $Computer
+					Client          = $LogEvent.UserData.EventXML.Param3
+				}
+				$ThisObject = New-Object -Type PSObject -Property $Properties
+				$ThisObject
 			}
-			$ThisObject = New-Object -Type PSObject -Property $Properties
-			Write-Output $ThisObject
 		} 
-		Write-Output $EventData
+		$EventData
 	}
 
 	END {
