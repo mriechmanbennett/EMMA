@@ -25,38 +25,38 @@ function Split-TextFile {
     [CmdletBinding()]
     param(
         [Parameter(
-            Mandatory=$true,
-            ValueFromPipeline=$true,
-            Position=0
-            )]
-        [string[]]$Path,
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            Position = 0
+        )]
+        [string]$Path,
 
         [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline=$false
-            )]
+            Mandatory = $false,
+            ValueFromPipeline = $false
+        )]
         [int]$MaxSize = 500,
 
         [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline=$false
-            )]
+            Mandatory = $false,
+            ValueFromPipeline = $false
+        )]
         [string]$Destination = $PWD
     )
 
     #------------ Script start ------------#
     BEGIN {
         $FunctionName = "Split-TextFile"
-		$StartTime = Get-Date
+        $StartTime = Get-Date
         $CurrentID = [System.Security.Principal.WindowsIdentity]::GetCurrent()
         $IsAdmin = [System.Security.Principal.WindowsPrincipal]::new($CurrentID).IsInRole('administrators')
-		Write-Verbose "[BEGIN  ] Starting:   $FunctionName"
+        Write-Verbose "[BEGIN  ] Starting:   $FunctionName"
         Write-Verbose "[BEGIN  ] User:       $CurrentID.Name"
         Write-Verbose "[BEGIN  ] Computer    $env:COMPUTERNAME"
         Write-Verbose "[BEGIN  ] Is Admin:   $IsAdmin"
         Write-Verbose "[BEGIN  ] OS:         $((Get-CimInstance Win32_Operatingsystem).Caption)"
         Write-Verbose "[BEGIN  ] OS Version: $((Get-CimInstance Win32_Operatingsystem).Version)"
-		Write-Verbose "[BEGIN  ] StartTime = $StartTime"
+        Write-Verbose "[BEGIN  ] StartTime = $StartTime"
 
         # Calculate the max size in bytes from MB
         $MaxSizeBytes = $MaxSize * 1MB
@@ -66,56 +66,56 @@ function Split-TextFile {
     }
 
     PROCESS {
-        foreach ( $Item in $Path ) {
-			Write-Verbose "[PROCESS] Process $Item at $(Get-Date)"
+        $FullPath = (Get-Item -Path $Path).FullName
+        Write-Verbose "[PROCESS] Process $FullPath at $(Get-Date)"
 
-            # Test if source file exists
-            if (!(Test-Path -PathType Leaf -Path $Item)) { Write-Error "Specified file does not exist"; break }
-            $FullItemPath = Get-Item -Path $Item | Select-Object FullName
+        # Test if source file exists
+        if (!(Test-Path -PathType Leaf -Path $FullPath)) { Write-Error "Specified file does not exist"; break }
+        $FullItemPath = (Get-Item -Path $FullPath).FullName
 
-            # Get current file name
-            $CurrentItemName = Split-Path -Path $FullItemPath -Leaf
-            Write-Verbose "[PROCESS] CurrentItemName $FullItemPath"
+        # Get current file name
+        $CurrentItemName = Split-Path -Path $FullItemPath -Leaf
+        Write-Verbose "[PROCESS] CurrentItemName $FullItemPath"
 
-            # Process the file
-            # Initialize stream reader
-            $reader = [System.IO.StreamReader]::new($FullItemPath)
-            if ($reader -eq $null) { Write-Verbose "[PROCESS] Stream reader was null"; break }
-            $chunkNumber = 1
-            $currentFile = "$Destination\Split_$CurrentItemName`_$chunkNumber.txt"
-            $writer = [System.IO.StreamWriter]::new($currentFile, $false)
-            $currentSize = 0
+        # Process the file
+        # Initialize stream reader
+        write-verbose $FullItemPath
+        $reader = [System.IO.StreamReader]::new($FullItemPath)
+        if ($reader -eq $null) { Write-Verbose "[PROCESS] Stream reader was null"; break }
+        $chunkNumber = 1
+        $currentFile = "$Destination\Split_$CurrentItemName`_$chunkNumber.txt"
+        $writer = [System.IO.StreamWriter]::new($currentFile, $false)
+        $currentSize = 0
 
-            # Process file
-            while (!$reader.EndOfStream) {
-                $line = $reader.ReadLine()
-                $lineBytes = [System.Text.Encoding]::UTF8.GetByteCount($line + [Environment]::NewLine)
-                if ($currentSize + $lineBytes -gt $MaxSizeBytes) {
-                    # Close current file and start a new one
-                    $writer.Close()
-                    $chunkNumber++
-                    Write-Verbose "[PROCESS] Max size reached while writing $currentFile"
-                    $currentFile = "$Destination\Split_$CurrentItemName`_$chunkNumber.txt"
-                    Write-Verbose "[PROCESS] Starting $currentFile"
-                    $writer = [System.IO.StreamWriter]::new($currentFile, $false)
-                    $currentSize = 0
-                } $writer.WriteLine($line)
-                $currentSize += $lineBytes
-            }
-            # Clean up the objects we're finished with
-            $writer.Close()
-            $reader.Close()
+        # Process file
+        while (!$reader.EndOfStream) {
+            $line = $reader.ReadLine()
+            $lineBytes = [System.Text.Encoding]::UTF8.GetByteCount($line + [Environment]::NewLine)
+            if ($currentSize + $lineBytes -gt $MaxSizeBytes) {
+                # Close current file and start a new one
+                $writer.Close()
+                $chunkNumber++
+                Write-Verbose "[PROCESS] Max size reached while writing $currentFile"
+                $currentFile = "$Destination\Split_$CurrentItemName`_$chunkNumber.txt"
+                Write-Verbose "[PROCESS] Starting $currentFile"
+                $writer = [System.IO.StreamWriter]::new($currentFile, $false)
+                $currentSize = 0
+            } $writer.WriteLine($line)
+            $currentSize += $lineBytes
+        }
+        # Clean up the objects we're finished with
+        $writer.Close()
+        $reader.Close()
 
-            Write-Verbose "[PROCESS] Finished splitting $CurrentItemName"
-		}
+        Write-Verbose "[PROCESS] Finished splitting $CurrentItemName"
     }
 
     END {
         $EndTime = Get-Date
-		$TimeSpan = New-TimeSpan -Start $StartTime -End $EndTime
-		Write-Verbose "[END    ] EndTime = $EndTime"
-		Write-Verbose "[END    ] RunTime = $TimeSpan"
-		Write-Verbose "[END    ] $FunctionName"
+        $TimeSpan = New-TimeSpan -Start $StartTime -End $EndTime
+        Write-Verbose "[END    ] EndTime = $EndTime"
+        Write-Verbose "[END    ] RunTime = $TimeSpan"
+        Write-Verbose "[END    ] $FunctionName"
     }
 
 }
